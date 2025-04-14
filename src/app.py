@@ -38,6 +38,42 @@ activities = {
         "schedule": "Mondays, Wednesdays, Fridays, 2:00 PM - 3:00 PM",
         "max_participants": 30,
         "participants": ["john@mergington.edu", "olivia@mergington.edu"]
+    },
+    "Basketball Team": {
+        "description": "Join the basketball team and compete in inter-school tournaments",
+        "schedule": "Tuesdays and Thursdays, 4:00 PM - 6:00 PM",
+        "max_participants": 15,
+        "participants": []
+    },
+    "Soccer Club": {
+        "description": "Practice soccer skills and participate in friendly matches",
+        "schedule": "Wednesdays and Fridays, 3:00 PM - 5:00 PM",
+        "max_participants": 20,
+        "participants": []
+    },
+    "Art Workshop": {
+        "description": "Explore your creativity through painting and drawing",
+        "schedule": "Saturdays, 10:00 AM - 12:00 PM",
+        "max_participants": 10,
+        "participants": []
+    },
+    "Drama Club": {
+        "description": "Act, direct, and produce plays for school events",
+        "schedule": "Mondays and Thursdays, 3:30 PM - 5:00 PM",
+        "max_participants": 15,
+        "participants": []
+    },
+    "Math Club": {
+        "description": "Solve challenging math problems and prepare for competitions",
+        "schedule": "Wednesdays, 3:30 PM - 4:30 PM",
+        "max_participants": 25,
+        "participants": []
+    },
+    "Science Club": {
+        "description": "Conduct experiments and explore scientific concepts",
+        "schedule": "Fridays, 4:00 PM - 5:30 PM",
+        "max_participants": 20,
+        "participants": []
     }
 }
 
@@ -54,7 +90,19 @@ def get_activities():
 
 @app.post("/activities/{activity_name}/signup")
 def signup_for_activity(activity_name: str, email: str):
-    """Sign up a student for an activity"""
+    # Validate student is not already signed up
+    for activity in activities.values():
+        if email in activity["participants"]:
+            raise HTTPException(status_code=400, detail="Student already signed up for an activity")
+        
+    # Validate activity is not full
+    if activity_name not in activities:
+        raise HTTPException(status_code=404, detail="Activity not found")
+    
+    if len(activities[activity_name]["participants"]) >= activities[activity_name]["max_participants"]:
+        raise HTTPException(status_code=400, detail="Activity is full")
+
+
     # Validate activity exists
     if activity_name not in activities:
         raise HTTPException(status_code=404, detail="Activity not found")
